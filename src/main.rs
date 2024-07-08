@@ -21,7 +21,7 @@ enum Commands {
         /// Time to notify user at
         // TODO: do this later maybe
         #[cfg(target_os="linux")]
-        notify: String,
+        notify: Option<String>,
         
     },
     /// View all tasks
@@ -42,10 +42,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     match &cli.command {
         Commands::Add { task, count, .. } => {
             println!("'myapp add' was used, task is: {task:?}, count is: {count:?}");
+            let mut config = task::get_tasks()?;
+            let new_task = task::Task {
+                description: task.clone(),
+                count: count.clone(),
+            };
+            config.tasks.push(new_task);
+            task::set_tasks(&config)?;
+            println!("New Tasks:");
+            println!("{0:?}", config.tasks);
         }
         Commands::View => {
             println!("Viewing all tasks");
-            let tasks = task::get_tasks()?;
+            let tasks = task::get_tasks()?.tasks;
             println!("{tasks:?}");
             // Implement view logic here
         }
