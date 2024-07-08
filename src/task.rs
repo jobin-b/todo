@@ -1,4 +1,5 @@
 use serde_derive::{Serialize, Deserialize};
+use colored::*;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Task {
@@ -17,12 +18,33 @@ impl ::std::default::Default for Config {
     fn default() -> Self { Self { tasks: Vec::new() } }
 }
 
-pub fn get_tasks() -> Result<Config, confy::ConfyError> {
+pub fn get_config() -> Result<Config, confy::ConfyError> {
     let cfg: Config = confy::load("todo", "todo_list")?;
     Ok(cfg)
 }
 
-pub fn set_tasks(cfg: &Config) -> Result<(), confy::ConfyError> {
+pub fn set_config(cfg: &Config) -> Result<(), confy::ConfyError> {
     confy::store("todo", "todo_list", cfg)?;
     Ok(())
+}
+
+pub fn display_tasks(tasks: &Vec<Task>) {
+    println!("\nTasks to do:");
+    for (index, task) in tasks.iter().enumerate() {
+        let description = if task.count == task.completed_count{
+            task.description.green()
+        } else {
+            task.description.normal()
+        };
+        let single = task.count == 1;
+
+        print!("{index}. {description} ", index = index + 1, description = description);
+
+        if !single {
+            println!("[{completed_count} / {count} Complete]", completed_count = task.completed_count, count = task.count);
+        } else {
+            println!();
+        } 
+    }
+    println!("");
 }

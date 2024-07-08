@@ -41,21 +41,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // matches just as you would the top level cmd
     match &cli.command {
         Commands::Add { task, count, .. } => {
-            println!("'myapp add' was used, task is: {task:?}, count is: {count:?}");
-            let mut config = task::get_tasks()?;
+            let mut config = task::get_config()?;
             let new_task = task::Task {
                 description: task.clone(),
                 count: count.clone(),
+                completed_count: 0,
             };
             config.tasks.push(new_task);
-            task::set_tasks(&config)?;
-            println!("New Tasks:");
-            println!("{0:?}", config.tasks);
+            task::set_config(&config)?;
+            println!("Successfully Added to list!");
+            task::display_tasks(&config.tasks);
         }
         Commands::View => {
-            println!("Viewing all tasks");
-            let tasks = task::get_tasks()?.tasks;
-            println!("{tasks:?}");
+            let tasks = task::get_config()?.tasks;
+            task::display_tasks(&tasks)
             // Implement view logic here
         }
         Commands::Done { task_id, count } => {
