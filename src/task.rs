@@ -4,6 +4,7 @@ use serde_derive::{Serialize, Deserialize};
 pub struct Task {
     pub description: String,
     pub count: u32,
+    pub completed_count: u32
 }
 
 #[derive(Debug, Serialize, Deserialize)]
