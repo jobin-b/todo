@@ -170,17 +170,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "grrs"
-version = "0.1.0"
-dependencies = [
- "clap",
- "colored",
- "confy",
- "serde",
- "serde_derive",
-]
-
-[[package]]
 name = "hashbrown"
 version = "0.14.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -335,6 +324,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "todo"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "colored",
+ "confy",
+ "serde",
+ "serde_derive",
 ]
 
 [[package]]

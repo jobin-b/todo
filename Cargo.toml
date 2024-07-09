@@ -1,7 +1,13 @@
 [package]
-name = "grrs"
+name = "todo"
 version = "0.1.0"
 edition = "2021"
+
+
+[package.metadata.bundle]
+name = "todo"
+identifier = "io.github.jobin-b.todo"
+short_description = "a simple todo app" 
 
 [dependencies]
 clap = { version = "4.5.8", features = ["derive"] }
