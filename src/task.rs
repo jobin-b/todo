@@ -31,7 +31,7 @@ pub fn set_config(cfg: &Config) -> Result<(), confy::ConfyError> {
 pub fn display_tasks(tasks: &Vec<Task>) {
     println!("\nTasks to do:");
     for (index, task) in tasks.iter().enumerate() {
-        let description = if task.count == task.completed_count{
+        let description = if task.count == task.completed_count {
             task.description.green()
         } else {
             task.description.normal()
@@ -41,7 +41,16 @@ pub fn display_tasks(tasks: &Vec<Task>) {
         print!("{index}. {description} ", index = index + 1, description = description);
 
         if !single {
-            println!("[{completed_count} / {count} Complete]", completed_count = task.completed_count, count = task.count);
+            let status = format!(
+                    "[{completed_count} / {count} Complete]",
+                    completed_count = task.completed_count,
+                    count = task.count
+                );
+            if task.count == task.completed_count {
+                println!("{}", status.green());
+            } else {
+                println!("{status}");
+            }
         } else {
             println!();
         } 

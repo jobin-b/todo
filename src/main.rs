@@ -12,6 +12,7 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// Adds tasks to todo list
+    #[command(aliases = &["a"])]
     Add { 
         /// Task description
         task: String,
@@ -26,12 +27,22 @@ enum Commands {
     },
     /// View all tasks
     View,
+    /// Complete/Progress a task
     Done {
         /// ID of the task
-        task_id:u32,
-        /// Number of times done (ignored if task has count of 1)
-        count:u32,
-    }
+        task_id: u32,
+        /// Number of times done (optional)
+        #[arg(short,long,default_value_t=1)]
+        count: u32,
+    },
+    #[command(aliases = &["rm"])]
+    /// remove task by id
+    Remove {
+       /// ID of the task
+       task_id: u32,
+    },
+    /// Clear the entire list
+    Clear,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -55,12 +66,33 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::View => {
             let tasks = task::get_config()?.tasks;
             task::display_tasks(&tasks)
-            // Implement view logic here
         }
         Commands::Done { task_id, count } => {
             println!("Completing task ID: {}", task_id);
             println!("Count: {}", count);
-            // Implement completion logic here
+            let index = *task_id as usize;
+            let mut config = task::get_config()?;
+            let tasks = &mut config.tasks;
+            assert!(index <= tasks.len(), "Task {index:?} does not exist");
+            let task = &mut tasks[index-1];
+            assert!(count + task.completed_count <= task.count, "Completed count exceeds task's limit");
+            task.completed_count += count;
+            task::set_config(&config)?;
+            task::display_tasks(&config.tasks);
+        }
+        Commands::Remove { task_id } => {
+            let mut config = task::get_config()?;
+            let tasks = &mut config.tasks;
+            let index = *task_id as usize;
+            assert!(index <= tasks.len(), "Task {index:?} does not exist");
+            tasks.remove(index - 1);
+            task::set_config(&config)?;
+            task::display_tasks(&config.tasks);
+        }
+        Commands::Clear => {
+            let cfg = task::Config::default();
+            task::set_config(&cfg)?;
+            println!("Cleared todo list");
         }
     }
     Ok(())
